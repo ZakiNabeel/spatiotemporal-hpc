@@ -1,45 +1,48 @@
 from typing import TypedDict
 import os
 
-# Note: In a production environment, you should handle imports robustly.
-from langgraph.graph import StateGraph, END
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langgraph.graph import StateGraph, END
 
 class TacticalState(TypedDict):
-    centroid_x: float
-    spread: float
-    tactical_description: str
+    raw_centroids: dict
+    tactical_interpretation: str
     final_report: str
 
-def interpretation_node(state: TacticalState):
-    llm = ChatOpenAI(model="gpt-4o", temperature=0.2)
-    prompt = ChatPromptTemplate.from_template(
-        "You are an expert football tactical analyst.\n"
-        "Given the team's average Centroid X: {centroid_x}m (where 0 is center circle, positive is opponent's half) "
-        "and Team Spread: {spread}m,\n"
-        "provide a short, concise tactical description (e.g., 'High Press, Compact Shape')."
-    )
-    chain = prompt | llm
-    response = chain.invoke({
-        "centroid_x": state["centroid_x"], 
-        "spread": state["spread"]
-    })
+def interpreter(state: TacticalState):
+    # Initialize the Groq model
+    llm = ChatGroq(model="llama3-8b-8192", temperature=0.2)
     
-    return {"tactical_description": response.content}
-
-def reporting_node(state: TacticalState):
-    llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+    # Emphasizing pitch dimensions and coordinate center
     prompt = ChatPromptTemplate.from_template(
-        "You are a Head Scout for a Premier League team.\n"
-        "Using the following tactical interpretation from our data model: '{tactical_description}',\n"
-        "generate a brief Markdown scouting brief summarizing the team's shape and likely approach. "
-        "Keep it professional and action-oriented."
+        "You are an expert Premier League tactical analyst.\n"
+        "We have clustered player tracking data on a football pitch with dimensions 105x68m.\n"
+        "The center spot of the pitch is at coordinates (0,0).\n"
+        "Positive X values indicate the opponent's half, while negative X values indicate the team's own half.\n\n"
+        "Given the following raw centroid data (X, Y) and team spread from our GPU clusters:\n"
+        "{raw_centroids}\n\n"
+        "Translate these raw metrics into football tactical terminology (e.g., 'High Press', 'Mid Block', 'Low Block'). "
+        "Provide a concise and accurate tactical interpretation."
     )
     chain = prompt | llm
-    response = chain.invoke({
-        "tactical_description": state["tactical_description"]
-    })
+    response = chain.invoke({"raw_centroids": state["raw_centroids"]})
+    
+    return {"tactical_interpretation": response.content}
+
+def scout(state: TacticalState):
+    # Initialize the Groq model
+    llm = ChatGroq(model="llama3-8b-8192", temperature=0.2)
+    
+    prompt = ChatPromptTemplate.from_template(
+        "You are the Head Scout for a Premier League team, reporting directly to the manager.\n"
+        "Based on the following tactical interpretation derived from our tracking data:\n"
+        "{tactical_interpretation}\n\n"
+        "Format this interpretation into a professional Markdown scouting report. "
+        "Make it actionable, clear, and cleanly structured."
+    )
+    chain = prompt | llm
+    response = chain.invoke({"tactical_interpretation": state["tactical_interpretation"]})
     
     return {"final_report": response.content}
 
@@ -47,33 +50,36 @@ def build_tactical_agent():
     workflow = StateGraph(TacticalState)
     
     # Add nodes
-    workflow.add_node("interpretation", interpretation_node)
-    workflow.add_node("reporting", reporting_node)
+    workflow.add_node("interpreter", interpreter)
+    workflow.add_node("scout", scout)
     
-    # Define edges
-    workflow.set_entry_point("interpretation")
-    workflow.add_edge("interpretation", "reporting")
-    workflow.add_edge("reporting", END)
+    # Define edges and entry/exit points
+    workflow.set_entry_point("interpreter")
+    workflow.add_edge("interpreter", "scout")
+    workflow.add_edge("scout", END)
     
     return workflow.compile()
 
 if __name__ == "__main__":
-    # Ensure you have your API key set in your environment
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY not found in environment.")
+    if not os.environ.get("GROQ_API_KEY"):
+        print("Warning: GROQ_API_KEY not found in environment. Please set it before running.")
         
     app = build_tactical_agent()
     
-    # Example state: highly advanced centroid (+15.2m into opponent half), large spread
+    # Mock GPU output data to test logic immediately
+    mock_gpu_output = {
+        "Phase 1 Cluster": {"centroid_x": 18.5, "centroid_y": 2.1, "spread_x": 35.0, "spread_y": 40.0},
+        "Phase 2 Cluster": {"centroid_x": -15.0, "centroid_y": -5.0, "spread_x": 25.0, "spread_y": 30.0}
+    }
+    
     initial_state = {
-        "centroid_x": 15.2,
-        "spread": 30.5,
-        "tactical_description": "",
+        "raw_centroids": mock_gpu_output,
+        "tactical_interpretation": "",
         "final_report": ""
     }
     
     try:
-        print("Running Tactical Agent Workflow...")
+        print("Running Groq Tactical Agent Workflow...")
         result = app.invoke(initial_state)
         print("\n--- FINAL SCOUTING BRIEF ---\n")
         print(result["final_report"])
