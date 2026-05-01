@@ -26,6 +26,7 @@ __global__ void compute_clusters_kernel(
         __syncthreads();
         
         // Compute Euclidean distance to all centroids
+        // Ensure the distance calculation loops through all 22 dimensions (11 players * 2 coordinates)
         for (int c = 0; c < k_clusters; ++c) {
             float dist = 0.0f;
             for (int f = 0; f < n_features; ++f) {

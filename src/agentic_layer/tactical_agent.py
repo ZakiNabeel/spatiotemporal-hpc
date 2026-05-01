@@ -11,19 +11,19 @@ class TacticalState(TypedDict):
     final_report: str
 
 def interpreter(state: TacticalState):
-    # Initialize the Groq model
-    llm = ChatGroq(model="llama3-8b-8192", temperature=0.2)
+    # Initialize the updated Groq model to llama-3.1-8b-instant
+    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.2)
     
-    # Emphasizing pitch dimensions and coordinate center
+    # System prompt updated for 11-player formations
     prompt = ChatPromptTemplate.from_template(
         "You are an expert Premier League tactical analyst.\n"
-        "We have clustered player tracking data on a football pitch with dimensions 105x68m.\n"
-        "The center spot of the pitch is at coordinates (0,0).\n"
-        "Positive X values indicate the opponent's half, while negative X values indicate the team's own half.\n\n"
-        "Given the following raw centroid data (X, Y) and team spread from our GPU clusters:\n"
+        "You are analyzing 11-player relative coordinate sets. Recognize these geometric patterns "
+        "as standard football formations (e.g., 4-3-3, 3-5-2) and describe their tactical intent.\n"
+        "The coordinate center (0,0) is the team centroid.\n\n"
+        "Given the following 22-dimensional raw centroid data (X, Y for 11 players) from our GPU clusters:\n"
         "{raw_centroids}\n\n"
-        "Translate these raw metrics into football tactical terminology (e.g., 'High Press', 'Mid Block', 'Low Block'). "
-        "Provide a concise and accurate tactical interpretation."
+        "Translate these coordinates into a recognized formation and describe the likely tactical style "
+        "(e.g., attacking width, compact defensive block, double pivot)."
     )
     chain = prompt | llm
     response = chain.invoke({"raw_centroids": state["raw_centroids"]})
@@ -31,12 +31,11 @@ def interpreter(state: TacticalState):
     return {"tactical_interpretation": response.content}
 
 def scout(state: TacticalState):
-    # Initialize the Groq model
-    llm = ChatGroq(model="llama3-8b-8192", temperature=0.2)
+    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.2)
     
     prompt = ChatPromptTemplate.from_template(
         "You are the Head Scout for a Premier League team, reporting directly to the manager.\n"
-        "Based on the following tactical interpretation derived from our tracking data:\n"
+        "Based on the following tactical formation interpretation derived from our tracking data:\n"
         "{tactical_interpretation}\n\n"
         "Format this interpretation into a professional Markdown scouting report. "
         "Make it actionable, clear, and cleanly structured."
@@ -49,11 +48,9 @@ def scout(state: TacticalState):
 def build_tactical_agent():
     workflow = StateGraph(TacticalState)
     
-    # Add nodes
     workflow.add_node("interpreter", interpreter)
     workflow.add_node("scout", scout)
     
-    # Define edges and entry/exit points
     workflow.set_entry_point("interpreter")
     workflow.add_edge("interpreter", "scout")
     workflow.add_edge("scout", END)
@@ -66,10 +63,13 @@ if __name__ == "__main__":
         
     app = build_tactical_agent()
     
-    # Mock GPU output data to test logic immediately
+    # Mock GPU output data for 11 players (22 dimensions)
+    mock_cluster_1 = {f"P{i//2 + 1}_{'X' if i%2==0 else 'Y'}": round((i - 10)*1.5, 2) for i in range(22)}
+    mock_cluster_2 = {f"P{i//2 + 1}_{'X' if i%2==0 else 'Y'}": round((i - 10)*-1.2, 2) for i in range(22)}
+    
     mock_gpu_output = {
-        "Phase 1 Cluster": {"centroid_x": 18.5, "centroid_y": 2.1, "spread_x": 35.0, "spread_y": 40.0},
-        "Phase 2 Cluster": {"centroid_x": -15.0, "centroid_y": -5.0, "spread_x": 25.0, "spread_y": 30.0}
+        "Phase 1 Formation Cluster": mock_cluster_1,
+        "Phase 2 Formation Cluster": mock_cluster_2
     }
     
     initial_state = {
@@ -79,9 +79,17 @@ if __name__ == "__main__":
     }
     
     try:
-        print("Running Groq Tactical Agent Workflow...")
+        print("Running Groq Tactical Agent Workflow (Llama 3.1)...")
         result = app.invoke(initial_state)
         print("\n--- FINAL SCOUTING BRIEF ---\n")
         print(result["final_report"])
+        
+        # Export the result to a text file
+        output_file = "data/processed/tactical_report.txt"
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(result["final_report"])
+        print(f"\nReport successfully exported to {output_file}")
+        
     except Exception as e:
         print(f"Error executing agent: {e}")

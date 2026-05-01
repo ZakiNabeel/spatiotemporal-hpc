@@ -30,7 +30,8 @@ int main() {
     std::getline(file, line); // Skip CSV header
     
     int n_frames = 0;
-    int n_features = 4; // Centroid_X, Centroid_Y, Spread_X, Spread_Y
+    // Updated to 22 features (11 players * 2 coordinates)
+    int n_features = 22; 
     
     // Parse the processed CSV
     while (std::getline(file, line)) {
@@ -47,15 +48,20 @@ int main() {
     }
     file.close();
     
-    std::cout << "Loaded " << n_frames << " frames from CSV." << std::endl;
+    std::cout << "Loaded " << n_frames << " frames from CSV with " << n_features << " features each." << std::endl;
     
-    // Define initial centroids for demonstration (e.g. random or pre-computed)
+    // Define initial centroids for demonstration (e.g. 22-dimensional dummy data)
     int k_clusters = 3;
-    std::vector<float> h_centroids = {
-        0.0f, 0.0f, 30.0f, 30.0f,       // Cluster 0
-        15.2f, 5.0f, 30.5f, 25.0f,      // Cluster 1
-        -10.0f, -5.0f, 20.0f, 20.0f     // Cluster 2
-    };
+    std::vector<float> h_centroids(k_clusters * n_features, 0.0f);
+    
+    // Initialize mock formation centroids (spread out to simulate players)
+    for (int c = 0; c < k_clusters; ++c) {
+        for (int f = 0; f < n_features; ++f) {
+            // Even is X, Odd is Y. Generate some dummy relative offsets.
+            float val = (float)(f - 10) * 2.0f;
+            h_centroids[c * n_features + f] = (c % 2 == 0) ? val : -val;
+        }
+    }
     
     std::vector<int> h_assignments(n_frames, -1);
     
