@@ -1,54 +1,62 @@
-**Scouting Report: Tactical Analysis of Premier League Team**
+**Scouting Report: Tactical Style Analysis**
+=====================================================
 
-**Introduction**
+**Team Overview**
+----------------
 
-As the Head Scout for our Premier League team, I have analyzed the tactical formations of our opponents using 22-dimensional raw centroid data. This report provides an in-depth analysis of the two formations identified, highlighting key tactical styles and potential weaknesses.
+Based on the provided 22-dimensional raw centroid data, we have analyzed the geometric patterns of the 11-player relative coordinate sets to describe the likely tactical style of the team.
 
-**Phase 1 Formation: 4-3-3 with Attacking Width**
+**Formation Analysis**
+----------------------
 
-**Formation Overview**
+### Cluster 0
 
-The coordinates for Phase 1 are:
--15.0, -13.5, -12.0, -10.5, -9.0, -7.5, -6.0, -4.5, -3.0, -1.5, 0.0, 1.5, 3.0, 4.5, 6.0, 7.5, 9.0, 10.5, 12.0, 13.5, 15.0, 16.5
+* **Formation:** 4-4-2 or 4-3-3 with a winger setup
+* **Key Players:**
+	+ Full-backs: Players on the left and right sides of the team centroid
+	+ Center-backs and defensive midfielders: Players in the middle
+	+ Strikers and attacking midfielders: Players at the front
+* **Tactical Style:** Quick transitions, using pacey wingers to attack the opponent's flanks
 
-Plotting these coordinates reveals a clear diamond shape with the center of the diamond at (0, 0). The players are positioned in a 4-3-3 formation, with the three central midfielders (P3, P4, P5) forming the base of the diamond, the two wide midfielders (P1, P11) on the wings, and the two strikers (P6, P7) at the front.
+### Cluster 1
 
-**Tactical Style**
+* **Formation:** 4-4-2 or 4-3-3 with a winger setup
+* **Key Players:**
+	+ Full-backs: Players on the left and right sides of the team centroid
+	+ Center-backs and defensive midfielders: Players in the middle
+	+ Strikers and attacking midfielders: Players at the front
+* **Tactical Style:** Counter-attacking, using pacey wingers to catch the opponent off guard
 
-The likely tactical style for this formation is an attacking width, with the wide midfielders providing width and supporting the full-backs in attack. The central midfielders will likely form a double pivot, with one player sitting deeper and controlling the tempo of the game, while the other player is more advanced and supports the attack.
+### Cluster 2
 
-**Key Takeaways**
-
-* The 4-3-3 formation allows for a strong attacking presence, with two strikers and two wide midfielders providing width.
-* The double pivot in midfield provides control and allows for quick transitions from defense to attack.
-* The full-backs will be required to support the wide midfielders in attack, which may leave them vulnerable to counter-attacks.
-
-**Phase 2 Formation: 3-5-3 with Compact Defensive Block**
-
-**Formation Overview**
-
-The coordinates for Phase 2 are:
-12.0, 10.8, 9.6, 8.4, 7.2, 6.0, 4.8, 3.6, 2.4, 1.2, -0.0, -1.2, -2.4, -3.6, -4.8, -6.0, -7.2, -8.4, -9.6, -10.8, -12.0, -13.2
-
-Plotting these coordinates reveals a similar diamond shape with the center of the diamond at (0, 0). However, the players are positioned in a 3-5-3 formation, with the three central defenders (P3, P4, P5) forming the base of the diamond, the two wing-backs (P1, P11) on the wings, and the three forwards (P6, P7, P8) at the front.
-
-**Tactical Style**
-
-The likely tactical style for this formation is a compact defensive block, with the three central defenders forming a solid defensive unit and the wing-backs providing width and supporting the full-backs in attack. The three forwards will likely form a front three, with one player playing as a target man, one player playing as a creator, and one player playing as a pacey winger.
-
-**Key Takeaways**
-
-* The 3-5-3 formation provides a strong defensive presence, with three central defenders and two wing-backs providing width.
-* The compact defensive block will be difficult to break down, but may leave the team vulnerable to counter-attacks.
-* The front three will require coordination and movement to create scoring opportunities.
+* **Formation:** 3-5-2 or 3-4-3 with a target man setup
+* **Key Players:**
+	+ Center-backs: Players in the middle
+	+ Full-backs and defensive midfielders: Players on the left and right sides
+	+ Target man: One of the strikers at the front
+* **Tactical Style:** Targeting the opponent's defense with the target man, using midfielders to control the game
 
 **Actionable Recommendations**
+-----------------------------
 
-Based on this analysis, the following recommendations are made:
+Based on the analysis, we recommend the following:
 
-* For Phase 1, we should look to exploit the full-backs' vulnerability to counter-attacks by targeting them with quick passes and runs.
-* For Phase 2, we should look to exploit the compact defensive block by targeting the wing-backs and creating opportunities for counter-attacks.
+* **Cluster 0:** Focus on developing the team's ability to quickly transition from defense to offense, using pacey wingers to attack the opponent's flanks.
+* **Cluster 1:** Emphasize the team's counter-attacking style, using pacey wingers to catch the opponent off guard.
+* **Cluster 2:** Develop the team's target man, using him to target the opponent's defense and control the game with midfielders.
 
 **Conclusion**
+--------------
 
-This scouting report provides an in-depth analysis of the two formations identified, highlighting key tactical styles and potential weaknesses. By understanding these formations and tactical styles, we can develop effective strategies to counter our opponents and gain a competitive advantage.
+The likely tactical style of the team is a combination of the formations and players' coordinates. However, it is essential to note that these are just interpretations based on the provided data, and the actual tactical style of the team may vary depending on various factors, including the team's playing style, the opponent's strengths and weaknesses, and the coach's tactics.
+
+**Recommendations for Further Analysis**
+-----------------------------------------
+
+To further analyze the team's tactical style, we recommend:
+
+* Analyzing the team's playing style and identifying areas for improvement
+* Evaluating the opponent's strengths and weaknesses to develop effective counter-attacking strategies
+* Reviewing the coach's tactics and identifying areas for adjustment to optimize the team's performance
+
+By following these recommendations, we can gain a deeper understanding of the team's tactical style and develop effective strategies to improve their performance.
