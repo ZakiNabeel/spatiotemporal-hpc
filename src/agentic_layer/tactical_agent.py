@@ -1,5 +1,6 @@
 from typing import TypedDict
 import os
+import pandas as pd
 
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
@@ -57,23 +58,31 @@ def build_tactical_agent():
     
     return workflow.compile()
 
+def load_centroids_from_csv(file_path):
+    df = pd.read_csv(file_path, header=None)
+    raw_centroids = {}
+    for i, row in df.iterrows():
+        coords = [round(val, 2) for val in row.values]
+        raw_centroids[f"Cluster {i}"] = f"[{', '.join(map(str, coords))}]"
+    return raw_centroids
+
 if __name__ == "__main__":
     if not os.environ.get("GROQ_API_KEY"):
         print("Warning: GROQ_API_KEY not found in environment. Please set it before running.")
         
     app = build_tactical_agent()
     
-    # Mock GPU output data for 11 players (22 dimensions)
-    mock_cluster_1 = {f"P{i//2 + 1}_{'X' if i%2==0 else 'Y'}": round((i - 10)*1.5, 2) for i in range(22)}
-    mock_cluster_2 = {f"P{i//2 + 1}_{'X' if i%2==0 else 'Y'}": round((i - 10)*-1.2, 2) for i in range(22)}
-    
-    mock_gpu_output = {
-        "Phase 1 Formation Cluster": mock_cluster_1,
-        "Phase 2 Formation Cluster": mock_cluster_2
-    }
+    csv_path = "data/processed/tactical_centroids.csv"
+    if os.path.exists(csv_path):
+        print(f"Loading real cluster data from {csv_path}...")
+        gpu_output = load_centroids_from_csv(csv_path)
+    else:
+        print(f"Error: {csv_path} not found.")
+        print("Please run the C++/CUDA engine or download the file from Colab and place it in data/processed/.")
+        exit(1)
     
     initial_state = {
-        "raw_centroids": mock_gpu_output,
+        "raw_centroids": gpu_output,
         "tactical_interpretation": "",
         "final_report": ""
     }

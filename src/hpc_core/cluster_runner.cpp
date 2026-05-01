@@ -16,6 +16,19 @@ extern "C" void launch_compute_clusters(
     int threads_per_block
 );
 
+void saveCentroids(float* centroids, int k, int features, const std::string& filename) {
+    std::ofstream file(filename);
+    for (int i = 0; i < k; i++) {
+        for (int j = 0; j < features; j++) {
+            file << centroids[i * features + j] << (j == features - 1 ? "" : ",");
+        }
+        file << "\n";
+    }
+    file.close();
+    std::cout << "Tactical centroids saved to " << filename << std::endl;
+}
+
+
 int main() {
     std::string filename = "data/processed/home_team_features.csv";
     std::ifstream file(filename);
@@ -62,6 +75,9 @@ int main() {
             h_centroids[c * n_features + f] = (c % 2 == 0) ? val : -val;
         }
     }
+
+    // Save the initial centroids (Formations)
+    saveCentroids(h_centroids, k_clusters, n_features, "data/processed/tactical_centroids.csv");
     
     std::vector<int> h_assignments(n_frames, -1);
     
