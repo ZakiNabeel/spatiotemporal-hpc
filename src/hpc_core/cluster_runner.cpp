@@ -77,8 +77,7 @@ int main() {
     }
 
     // Save the initial centroids (Formations)
-    saveCentroids(h_centroids, k_clusters, n_features, "data/processed/tactical_centroids.csv");
-    
+    saveCentroids(h_centroids.data(), k_clusters, n_features, "data/processed/tactical_centroids.csv");    
     std::vector<int> h_assignments(n_frames, -1);
     
     float *d_features = nullptr;
