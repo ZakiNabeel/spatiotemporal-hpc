@@ -1,0 +1,5 @@
+pandas
+numpy
+langgraph
+langchain-openai
+pydantic
