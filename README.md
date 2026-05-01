@@ -1,34 +1,11 @@
-# ⚽ Tactical Phase Clustering & Agentic Scouting Engine
-
-> **GPU-accelerated spatiotemporal clustering and multi-agent tactical reporting for high-frequency football tracking data.**
-
-## 📖 Overview
-Modern elite football (e.g., the Premier League) generates millions of spatiotemporal data points per match via 25fps tracking cameras. Identifying distinct tactical phases (e.g., high-press, low-block transitions) from this massive, unstructured coordinate data is computationally expensive and difficult to interpret.
-
-This project solves both bottlenecks through a **Hybrid Cloud-HPC Pipeline**:
-1. **The HPC Layer:** Bypasses standard Python libraries by utilizing custom **C++/CUDA kernels** to parallelize the mathematical distance calculations required for K-Means clustering across millions of tactical frames.
-2. **The Agentic Layer:** Utilizes a **LangGraph** multi-agent orchestration workflow to analyze the resulting mathematical centroids and automatically generate natural-language tactical scouting briefs.
-
-## 🛠️ Tech Stack
-*   **Data Pipeline:** Python, Pandas, NumPy
-*   **High-Performance Computing:** C++, CUDA, NVIDIA Tesla T4 (via Google Colab)
-*   **AI Orchestration:** LangGraph, LangChain, OpenAI GPT-4o
-*   **Data Source:** Metrica Sports Open Tracking Dataset (105x68m pitch, normalized coordinates)
-
-## 📂 Repository Structure
-```text
-tactical-clustering-engine/
-├── data/                     # (Ignored in Git)
-│   ├── raw/                  # Metrica CSVs (Raw Tracking Data)
-│   └── processed/            # Parsed feature matrices ready for GPU
+⚽ Tactical Phase Clustering & Agentic Scouting EngineA Hybrid HPC-AI Pipeline for Automated Football Formation Detection and Strategic Analysis.🚀 OverviewThis project bridges the gap between raw spatiotemporal tracking data and high-level tactical intelligence. It processes millions of data points to identify recurring team formations and generates professional scouting briefs using a multi-agent orchestration layer.The system analyzes 145,007 frames of tracking data (25fps) by extracting 22-dimensional feature vectors (normalized X, Y coordinates for all 11 players) to recognize complex geometric patterns on a 105x68m pitch.🛠️ Technical Architecture1. The HPC Layer (CUDA/C++)Heavy geometric computations are offloaded to an NVIDIA Tesla T4 GPU.Custom K-Means Kernel: Parallelized Euclidean distance calculations across 22 dimensions.Performance: Thousands of parallel threads calculate tactical centroids near-instantaneously, a task that would take standard CPU-bound scripts minutes.2. High-Resolution Data EngineeringUnlike basic centroid tracking, this engine utilizes Formation Normalization.Geometric Invariance: By subtracting the team centroid from each player's coordinate, the system recognizes a "4-3-3" shape regardless of where it is located on the pitch.Feature Set: 11-player relative coordinates ($Player1\_X, Player1\_Y \dots Player11\_Y$).3. Agentic Orchestration (LangGraph + Llama 3.1)The "Voice" of the system is built using LangGraph and Groq, running the Llama-3.1-8b-instant model.The Interpreter: Translates raw GPU centroids into recognized football formations (e.g., 4-4-2 vs. 3-5-2).The Scout: Formats interpretation into a professional, actionable Markdown brief for technical staff.📊 Real-World GPU Output: Scouting BriefBased on the real cluster centroids calculated by the CUDA engine, the Agentic Layer generated the following report:Phase 1: Transitional 4-3-3 / 4-4-2Tactical Style: Quick transitions utilizing pacey wingers to attack flanks.Key Detail: The engine identified a stable four-man backline with a double-pivot midfield structure.Phase 2: Defensive Counter-AttackTactical Style: Deep defensive block with a focus on catching opponents off-guard during transition.Key Detail: Formation density increases centrally to deny space.Phase 3: Tactical Shift (3-5-2 / 3-4-3)Tactical Style: Strategic pivot to a "Target Man" setup.Key Detail: The GPU identified a shift to three central defenders and wide wing-backs, allowing for greater midfield control.📂 Project StructurePlaintexttactical-clustering-engine/
+├── data/
+│   ├── raw/                  # Metrica tracking data
+│   └── processed/            # 22-column formation matrices & GPU Centroids
 ├── src/
-│   ├── data_pipeline/        # Feature Engineering (Centroid & Spread)
-│   │   └── parse_metrica.py
-│   ├── hpc_core/             # C++/CUDA Parallel Clustering
-│   │   ├── kmeans_kernel.cu
-│   │   └── cluster_runner.cpp
-│   └── agentic_layer/        # LangGraph & LLM Orchestration
-│       └── tactical_agent.py
-├── notebooks/                # Quick EDA and visual sanity checks
-├── README.md
-└── requirements.txt
+│   ├── data_pipeline/        # Coordinate normalization & parsing
+│   ├── hpc_core/             # C++/CUDA Parallel Clustering Engine
+│   └── agentic_layer/        # LangGraph & Llama 3.1 Scouting Agent
+└── README.md
+⚙️ How to RunGenerate Features: Run src/data_pipeline/parse_metrica.py to create the 22-column formation matrix.GPU Compute: Compile and run cluster_engine on an NVIDIA GPU (e.g., Google Colab) to output tactical_centroids.csv.Generate Report: Download the centroids locally and run:PowerShell$env:GROQ_API_KEY="your_key"
+python src/agentic_layer/tactical_agent.py
